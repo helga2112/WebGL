@@ -7,13 +7,19 @@ import cameraSetup  from "./cameraSetup.js";
 
 const rangeRover2018 = "models/car/RRS.glb";
 const porsche911 = "models/car1/scene.gltf";
+const volvoS90 = "models/volvo_s90/Volvo S90.fbx";  // not working
+
+const Cars = {
+  car1: rangeRover2018,
+  car2: porsche911,
+  car3: volvoS90,
+}
 
 function setup() {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xdddddd);
 
   const camera = cameraSetup()
-
    
   addSceneLights(scene)
   addPointLights(scene)
@@ -24,28 +30,34 @@ function setup() {
   document.body.appendChild(renderer.domElement);
 
   const controls = new OrbitControls(camera, renderer.domElement)
-  controls.addEventListener('change', renderer)
-
+  controls.enableRotate = false;
+  controls.maxDistance = 8;
+  controls.minDistance = 5;
+  controls.addEventListener('chasnge', renderer)
 
   let loader = new GLTFLoader();
 
   try {
-    loader.load(porsche911, function (gltf) {
+    loader.load(Cars.car2, function (gltf) {
       console.log("LOADED");
-      const car = gltf.scene.children[0]
-      car.scale.set(0.5,0.5, 0.5)
+      const carMesh = gltf.scene.children[0]
+
+      carMesh.scale.set(0.5,0.5, 0.5)
+      console.log( carMesh)
       scene.add(gltf.scene);
-      //renderer.render(scene, camera);
+      renderer.render(scene, camera);
       animate()
     });
   } catch (e) {
     console.log("Load error", e);
   }
 
-
+  //var renderCalls = [];
   function animate(){
-    renderer.render(scene, camera)
+    //console.log('ANIMATE')
+   // renderer.render(scene, camera);
     requestAnimationFrame(animate)
+    //renderCalls.forEach((callback)=>{ callback(); });
   }
 }
 
