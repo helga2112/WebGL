@@ -18,6 +18,7 @@ const Cars = {
 function setup() {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xdddddd);
+  var renderCalls = [];
 
   const camera = cameraSetup()
    
@@ -27,15 +28,25 @@ function setup() {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
 
+  function render() {
+    renderer.render(scene, camera)
+}
+
+
   document.body.appendChild(renderer.domElement);
 
   const controls = new OrbitControls(camera, renderer.domElement)
   controls.enableRotate = false;
   controls.maxDistance = 8;
   controls.minDistance = 5;
-  controls.addEventListener('chasnge', renderer)
+  //controls.addEventListener('change', renderer)
+
+  renderCalls.push(function(){
+	  controls.update()
+	})
 
   let loader = new GLTFLoader();
+
 
   try {
     loader.load(Cars.car2, function (gltf) {
@@ -45,19 +56,16 @@ function setup() {
       carMesh.scale.set(0.5,0.5, 0.5)
       console.log( carMesh)
       scene.add(gltf.scene);
-      renderer.render(scene, camera);
       animate()
     });
   } catch (e) {
     console.log("Load error", e);
   }
 
-  //var renderCalls = [];
+
   function animate(){
-    //console.log('ANIMATE')
-   // renderer.render(scene, camera);
+    render()
     requestAnimationFrame(animate)
-    //renderCalls.forEach((callback)=>{ callback(); });
   }
 }
 
